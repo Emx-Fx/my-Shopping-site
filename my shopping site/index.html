@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gadget-testup — Tech, decoded.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header id="nav">
+  <div class="nav-row">
+    <a href="#" class="logo" onclick="goHome();return false;">
+      <span class="dot"></span><span class="txt">Gadget-<span class="accent">testup</span></span>
+    </a>
+
+    <div class="dropdown">
+      <button class="pill-btn" id="deliverBtn" onclick="toggleDropdown('countryPanel')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        <span class="txt">Deliver to <b id="countryLabel">United States</b></span>
+      </button>
+      <div class="dropdown-panel hide" id="countryPanel"></div>
+    </div>
+
+    <div class="search-wrap">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="searchInput" autocomplete="off" placeholder="Search gadgets…">
+      </div>
+      <div class="suggest-panel hide" id="suggestPanel"></div>
+    </div>
+
+    <div class="dropdown">
+      <button class="pill-btn" onclick="toggleDropdown('currencyPanel')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 8h4a2.5 2.5 0 0 1 0 5H9m0 0h5m-5 0v4m0-9V6"/></svg>
+        <span class="txt" id="currencyLabel">USD</span>
+      </button>
+      <div class="dropdown-panel hide right" id="currencyPanel"></div>
+    </div>
+
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode"></button>
+      <div id="authArea"></div>
+      <button class="icon-btn" onclick="openCart()" aria-label="Cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.5 3h2l2.6 12.6a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.6L21.5 7H6"/></svg>
+        <span class="cart-badge hide" id="cartBadge">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- ============ HOME VIEW ============ -->
+  <section class="view active" id="view-home">
+    <div class="hero blueprint">
+      <div class="eyebrow">Spec-first shopping</div>
+      <h1>Every gadget,<br><span class="grad">fully decoded.</span></h1>
+      <p class="sub">Real specs, honest ratings, and prices that update live in your currency. Browse phones, laptops, audio and more — built for people who read the datasheet first.</p>
+      <div class="hero-cta">
+        <button class="btn-primary" onclick="scrollToShelves()">Browse catalog</button>
+        <button class="btn-ghost" onclick="runSearch('flash sale')">View flash sale</button>
+      </div>
+      <div class="hero-specs">
+        <div><div class="n" id="statCount">--</div><div class="l">Devices listed</div></div>
+        <div><div class="n">6</div><div class="l">Categories</div></div>
+        <div><div class="n">40%</div><div class="l">Flash sale today</div></div>
+        <div><div class="n">4.6★</div><div class="l">Avg. rating</div></div>
+      </div>
+      <div id="heroAuthCta"></div>
+    </div>
+
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">Discover</div>
+        <h2>Just landed</h2>
+        <p>A rotating mix from across the catalog</p>
+      </div>
+    </div>
+    <div class="grid" id="randomGrid"></div>
+
+    <div class="flash-banner" id="shelves-anchor">
+      <div class="flash-left">
+        <div class="eyebrow" style="color:#ff9a86">Limited time</div>
+        <h3>Flash Sale — 40% off</h3>
+        <p>Ends tonight. Prices already discounted below.</p>
+      </div>
+      <div class="timer" id="timerBox">
+        <div class="box"><b id="tH">00</b><span>hrs</span></div>
+        <div class="box"><b id="tM">00</b><span>min</span></div>
+        <div class="box"><b id="tS">00</b><span>sec</span></div>
+      </div>
+    </div>
+    <div class="grid" id="flashGrid" style="margin-top:18px;"></div>
+
+    <div id="categoryShelves"></div>
+  </section>
+
+  <!-- ============ SEARCH RESULTS VIEW ============ -->
+  <section class="view" id="view-search">
+    <div class="results-head">
+      <div>
+        <div class="eyebrow">Results</div>
+        <h2 id="resultsQueryLabel">Search results</h2>
+      </div>
+      <div class="results-count" id="resultsCount"></div>
+    </div>
+    <div class="result-list" id="resultList"></div>
+  </section>
+
+  <!-- ============ PRODUCT DETAIL VIEW ============ -->
+  <section class="view" id="view-detail">
+    <button class="btn-ghost" style="margin:24px 0 6px;" onclick="goBackFromDetail()">← Back</button>
+    <div class="detail-wrap">
+      <div>
+        <div class="gallery-main blueprint" id="galleryMain"></div>
+        <div class="thumb-row" id="thumbRow"></div>
+      </div>
+      <div class="detail-info" id="detailInfo"></div>
+    </div>
+
+    <div class="section-head">
+      <div><div class="eyebrow">You might also like</div><h2>Similar devices</h2></div>
+    </div>
+    <div class="grid" id="similarGrid"></div>
+  </section>
+
+  <!-- ============ CHECKOUT VIEW ============ -->
+  <section class="view" id="view-checkout">
+    <div class="section-head" style="margin-top:26px;">
+      <div><div class="eyebrow">Checkout</div><h2>Complete your order</h2></div>
+    </div>
+    <div id="checkoutContent"></div>
+  </section>
+
+  <!-- ============ ORDER CONFIRMATION VIEW ============ -->
+  <section class="view" id="view-confirm">
+    <div class="confirm-box">
+      <div class="confirm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <h2>Order placed</h2>
+      <p>We've got it — a confirmation has been sent to your email. Your gadgets are on the way.</p>
+      <div class="order-id" id="orderIdLabel">GT-000000</div><br>
+      <button class="btn-primary" onclick="goHome()">Continue shopping</button>
+    </div>
+  </section>
+
+  <!-- ============ LOGIN VIEW ============ -->
+  <section class="view" id="view-login">
+    <div class="auth-page">
+      <div class="auth-card">
+        <h2>Welcome back</h2>
+        <p class="sub-txt">Log in to track orders and pick up your cart where you left off.</p>
+        <form onsubmit="submitLogin(event)">
+          <div class="field-stack">
+            <div class="field"><label>Email</label><input type="email" id="loginEmail" required placeholder="you@example.com"></div>
+            <div class="field"><label>Password</label><input type="password" id="loginPassword" required placeholder="••••••••"></div>
+          </div>
+          <div class="auth-error hide" id="loginError"></div>
+          <button class="btn-primary" style="width:100%;" type="submit" id="loginSubmitBtn">Log in</button>
+        </form>
+        <p class="auth-switch">Don't have an account? <a onclick="goSignup()">Sign up</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SIGN UP VIEW ============ -->
+  <section class="view" id="view-signup">
+    <div class="auth-page">
+      <div class="auth-card">
+        <h2>Create your account</h2>
+        <p class="sub-txt">Sign up to save your cart and track orders across visits.</p>
+        <form onsubmit="submitSignup(event)">
+          <div class="field-stack">
+            <div class="field"><label>Full name</label><input type="text" id="signupName" required placeholder="Ada Lovelace"></div>
+            <div class="field"><label>Email</label><input type="email" id="signupEmail" required placeholder="you@example.com"></div>
+            <div class="field"><label>Password</label><input type="password" id="signupPassword" required placeholder="••••••••"></div>
+            <div class="field"><label>Confirm password</label><input type="password" id="signupConfirmPassword" required placeholder="••••••••"></div>
+          </div>
+          <div class="auth-error hide" id="signupError"></div>
+          <button class="btn-primary" style="width:100%;" type="submit" id="signupSubmitBtn">Sign up</button>
+        </form>
+        <p class="auth-switch">Already have an account? <a onclick="goLogin()">Log in</a></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>© 2026 Gadget-testup. Built for people who read the spec sheet first.</footer>
+
+<!-- ============ CART DRAWER ============ -->
+<div id="overlay" onclick="closeAllOverlays()"></div>
+<aside id="cart-drawer">
+  <div class="drawer-head">
+    <h2>Your cart</h2>
+    <button class="icon-btn" onclick="closeCart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="drawer-body" id="cartBody"></div>
+  <div class="drawer-foot hide" id="cartFoot">
+    <div class="subtotal-row"><span>Subtotal</span><b id="cartSubtotal">$0.00</b></div>
+    <button class="btn-add-cart" onclick="goCheckout()">Checkout</button>
+  </div>
+</aside>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span id="toastMsg">Added to cart</span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
+</body>
+</html>
